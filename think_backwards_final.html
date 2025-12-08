@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Think Backwards – Terror (Final Version)</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* UNSCHARFER BACKGROUND */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: url('background_koch.png');
+  background-size: cover;
+  background-position: center;
+  filter: blur(14px) brightness(0.45);
+  z-index: -1;
+}
+
+/* HERO VIDEO */
+.hero-video-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  box-shadow: 0 4px 22px rgba(0,0,0,0.7);
+}
+
+.hero-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.85);
+}
+
+/* MUTE BUTTON */
+.hero-video-mute {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0,0,0,0.55);
+  color: white;
+  padding: 10px 14px;
+  border-radius: 50%;
+  font-size: 1.2rem;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.4);
+  backdrop-filter: blur(6px);
+  opacity: 1;
+  transition: opacity 0.6s ease, transform 0.3s ease, background 0.3s;
+  display: none;
+}
+
+.hero-video-mute:hover {
+  background: rgba(0,0,0,0.75);
+  transform: scale(1.1);
+}
+
+/* TONEINSCHALT BUTTON */
+.hero-video-overlay {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  background: rgba(0,0,0,0.65);
+  padding: 10px 16px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.4);
+  backdrop-filter: blur(4px);
+  font-size: 1rem;
+  transition: opacity 0.4s ease;
+}
+
+/* AUTO-HIDE */
+.hide-controls {
+  opacity: 0;
+  pointer-events: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="hero-video-container" id="videoContainer">
+  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline>
+    <source src="Trailer_Terror.mp4" type="video/mp4">
+  </video>
+
+  <div class="hero-video-overlay" id="enableSoundBtn" onclick="enableAudio()">
+      ▶️ Ton einschalten
+  </div>
+
+  <div class="hero-video-mute" id="muteToggle" onclick="toggleMute()">
+      🔇
+  </div>
+</div>
+
+<h1 style="text-align:center;color:white;text-shadow:0 0 12px black;margin-top:20px;">
+Think Backwards – Der Weg zum Abschuss
+</h1>
+
+<p style="text-align:center;color:white;text-shadow:0 0 10px black;">
+Web-Version mit Netflix-Style Video Controls
+</p>
+
+<script>
+let hideTimeout;
+
+function enableAudio() {
+  const video = document.getElementById("heroVideo");
+  const enableBtn = document.getElementById("enableSoundBtn");
+  const muteBtn = document.getElementById("muteToggle");
+
+  video.muted = false;
+  video.play();
+
+  enableBtn.style.display = "none";
+  muteBtn.style.display = "block";
+
+  startAutoHide();
+}
+
+function toggleMute() {
+  const video = document.getElementById("heroVideo");
+  const muteBtn = document.getElementById("muteToggle");
+
+  video.muted = !video.muted;
+
+  muteBtn.style.transform = "scale(1.25)";
+  setTimeout(() => muteBtn.style.transform = "scale(1)", 150);
+
+  muteBtn.textContent = video.muted ? "🔇" : "🔊";
+
+  startAutoHide();
+}
+
+function startAutoHide() {
+  const muteBtn = document.getElementById("muteToggle");
+
+  muteBtn.classList.remove("hide-controls");
+
+  if (hideTimeout) clearTimeout(hideTimeout);
+
+  hideTimeout = setTimeout(() => {
+    muteBtn.classList.add("hide-controls");
+  }, 3000);
+}
+
+document.addEventListener("mousemove", () => {
+  const muteBtn = document.getElementById("muteToggle");
+  if (muteBtn.style.display === "block") {
+    muteBtn.classList.remove("hide-controls");
+    startAutoHide();
+  }
+});
+
+document.addEventListener("touchstart", () => {
+  const muteBtn = document.getElementById("muteToggle");
+  if (muteBtn.style.display === "block") {
+    muteBtn.classList.remove("hide-controls");
+    startAutoHide();
+  }
+});
+</script>
+
+</body>
+</html>
