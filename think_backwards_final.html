@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Think Backwards – Terror (15 Levels)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('background_koch.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(14px) brightness(0.45);
+      z-index: -1;
+    }
+    .hero-video-container {
+      position: relative;
+      width: 100%;
+      height: 400px;
+      overflow: hidden;
+      box-shadow: 0 4px 22px rgba(0,0,0,0.7);
+    }
+    .hero-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.85);
+    }
+    .hero-video-mute {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(0,0,0,0.55);
+      color: white;
+      padding: 10px 14px;
+      border-radius: 50%;
+      font-size: 1.2rem;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.4);
+      backdrop-filter: blur(6px);
+      opacity: 1;
+      transition: opacity 0.6s ease, transform 0.3s ease, background 0.3s;
+      display: none;
+    }
+    .hero-video-mute:hover {
+      background: rgba(0,0,0,0.75);
+      transform: scale(1.1);
+    }
+    .hero-video-overlay {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.65);
+      padding: 10px 16px;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.4);
+      backdrop-filter: blur(4px);
+      font-size: 1rem;
+      transition: opacity 0.4s ease;
+    }
+    .hide-controls {
+      opacity: 0;
+      pointer-events: none;
+    }
+    #game-wrapper {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 30px 16px 60px 16px;
+    }
+    h1 {
+      color: #ffffff;
+      text-align: center;
+      margin: 26px 0 10px 0;
+      text-shadow: 0 0 14px rgba(0,0,0,0.9);
+    }
+    .subtitle {
+      color: #f0f0f0;
+      text-align: center;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px rgba(0,0,0,0.8);
+    }
+    .level {
+      background: rgba(255,255,255,0.9);
+      padding: 22px 20px;
+      margin-bottom: 24px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      display: none;
+    }
+    .level.active {
+      display: block;
+    }
+    .level h2 {
+      margin-top: 0;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      margin: 8px 0;
+      padding: 11px 12px;
+      border-radius: 8px;
+      border: none;
+      background: #ececec;
+      cursor: pointer;
+      font-size: 0.98rem;
+      text-align: left;
+    }
+    .options button:hover {
+      background: #dedede;
+    }
+    .correct {
+      color: green;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+    .wrong {
+      color: darkred;
+      font-weight: bold;
+      margin-top: 12px;
+    }
+    .next-btn {
+      background: #0066cc;
+      color: #fff;
+      padding: 9px 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      margin-top: 16px;
+      display: none;
+    }
+    .next-btn:hover {
+      background: #004c99;
+    }
+    #endMessage {
+      font-size: 1.2rem;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 22px;
+      color: #004c00;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<div id="homeButton" style="
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 9999;
+">
+  <button onclick="location.href='index.html'"
+    style="padding:10px 14px;font-size:1rem;border:none;border-radius:8px;
+           background:#444;color:white;cursor:pointer;">
+    🏠 Hauptmenü
+  </button>
+</div>
+
+
+<div id="homeButton" style="
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  z-index: 9999;
+">
+  <button onclick="location.href='index.html'"
+    style="padding:10px 14px;font-size:1rem;border:none;border-radius:8px;
+           background:#444;color:white;cursor:pointer;">
+    🏠 Hauptmenü
+  </button>
+</div>
+
+
+<div class="hero-video-container" id="videoContainer">
+  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline>
+    <source src="Trailer_Terror.mp4" type="video/mp4">
+    Dein Browser unterstützt dieses Video nicht.
+  </video>
+  <div class="hero-video-overlay" id="enableSoundBtn" onclick="enableAudio()">
+    ▶️ Ton einschalten
+  </div>
+  <div class="hero-video-mute" id="muteToggle" onclick="toggleMute()">
+    🔇
+  </div>
+</div>
+
+<div id="game-wrapper">
+  <h1>Think Backwards – Der Weg zum Abschuss</h1>
+  <p class="subtitle">
+    Rekonstruiere die Tragödie rückwärts – vom Abschuss zurück zum ersten Funkspruch.
+  </p>
+
+  <div id="game">
+
+    <!-- Level 1–15 -->
+    <div class="level active" id="level1">
+      <h2>LEVEL 1 – Der Abschuss (20:21:34)</h2>
+      <p><b>Was geschah direkt VOR dem Moment, in dem Koch die Rakete abfeuerte?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(1,'wrong')">Der Verteidigungsminister befahl ihm ausdrücklich, zu feuern.</button>
+        <button onclick="checkAnswer(1,'correct')">Koch sah, dass die Maschine im Sinkflug direkt auf die Allianz-Arena zuhielt.</button>
+        <button onclick="checkAnswer(1,'wrong')">Weinberger übernahm das Kommando über die Alarmrotte.</button>
+      </div>
+      <div id="feedback1"></div>
+      <button class="next-btn" id="next1" onclick="nextLevel(2)">Weiter zu Level 2</button>
+    </div>
+
+    <div class="level" id="level2">
+      <h2>LEVEL 2 – Sinkflug auf das Stadion</h2>
+      <p><b>Was geschah direkt VOR dem beobachteten Sinkflug?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(2,'wrong')">Das Stadion wurde endgültig geräumt.</button>
+        <button onclick="checkAnswer(2,'correct')">Koch hatte zweimal nachgefragt, ob wirklich kein Abschussbefehl vorlag.</button>
+        <button onclick="checkAnswer(2,'wrong')">Die Passagiere schalteten ihre Handys ein.</button>
+      </div>
+      <div id="feedback2"></div>
+      <button class="next-btn" id="next2" onclick="nextLevel(3)">Weiter zu Level 3</button>
+    </div>
+
+    <div class="level" id="level3">
+      <h2>LEVEL 3 – Zweimalige Rückfrage</h2>
+      <p><b>Was geschah direkt VOR Kochs zweimaliger Rückfrage nach dem Abschussbefehl?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(3,'correct')">Koch hatte einen Warnschuss abgegeben, der keinerlei Reaktion der Maschine auslöste.</button>
+        <button onclick="checkAnswer(3,'wrong')">Koch erhielt die Meldung, dass der Terrorist aufgegeben habe.</button>
+        <button onclick="checkAnswer(3,'wrong')">Die Maschine wechselte freiwillig den Kurs.</button>
+      </div>
+      <div id="feedback3"></div>
+      <button class="next-btn" id="next3" onclick="nextLevel(4)">Weiter zu Level 4</button>
+    </div>
+
+    <div class="level" id="level4">
+      <h2>LEVEL 4 – Der Warnschuss</h2>
+      <p><b>Was geschah direkt VOR dem Warnschuss?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(4,'correct')">Lauterbach hatte den Befehl zur „Intervention“ gegeben – erst abdrängen, nicht abschießen.</button>
+        <button onclick="checkAnswer(4,'wrong')">Der Terrorist funkte freiwillig mit Koch.</button>
+        <button onclick="checkAnswer(4,'wrong')">Der Minister sprach persönlich mit Koch.</button>
+      </div>
+      <div id="feedback4"></div>
+      <button class="next-btn" id="next4" onclick="nextLevel(5)">Weiter zu Level 5</button>
+    </div>
+
+    <div class="level" id="level5">
+      <h2>LEVEL 5 – Erfolgloses Abdrängen</h2>
+      <p><b>Was geschah direkt VOR dem Versuch, die Maschine abzudrängen?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(5,'correct')">Im Lagezentrum war klar, dass der Vorschlag zum Abschussbefehl vom Minister abgelehnt worden war.</button>
+        <button onclick="checkAnswer(5,'wrong')">Das Publikum im Stadion wurde informiert und verließ geordnet die Ränge.</button>
+        <button onclick="checkAnswer(5,'wrong')">Weinberger übernahm das Kommando und Koch flog zurück nach Hause.</button>
+      </div>
+      <div id="feedback5"></div>
+      <button class="next-btn" id="next5" onclick="nextLevel(6)">Weiter zu Level 6</button>
+    </div>
+
+    <div class="level" id="level6">
+      <h2>LEVEL 6 – Ablehnung des Abschussbefehls</h2>
+      <p><b>Was geschah direkt VOR der Ablehnung durch den Minister?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(6,'correct')">General Radtke hatte im Lagezentrum vorgeschlagen, den Abschussbefehl zu erteilen.</button>
+        <button onclick="checkAnswer(6,'wrong')">Die NATO übernahm komplett das Kommando über den deutschen Luftraum.</button>
+        <button onclick="checkAnswer(6,'wrong')">Koch meldete technische Probleme mit seinem Jet.</button>
+      </div>
+      <div id="feedback6"></div>
+      <button class="next-btn" id="next6" onclick="nextLevel(7)">Weiter zu Level 7</button>
+    </div>
+
+    <div class="level" id="level7">
+      <h2>LEVEL 7 – Vorschlag zum Abschuss</h2>
+      <p><b>Was geschah direkt VOR dem Vorschlag, die Maschine abzuschießen?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(7,'correct')">Die Alarmrotte meldete, dass sie Sichtkontakt hatte und den Terroristen im Cockpit erkannte.</button>
+        <button onclick="checkAnswer(7,'wrong')">Der Pilot der Lufthansa-Maschine meldete, alles sei unter Kontrolle.</button>
+        <button onclick="checkAnswer(7,'wrong')">Die Polizei hatte den Terroristen bereits am Boden festgenommen.</button>
+      </div>
+      <div id="feedback7"></div>
+      <button class="next-btn" id="next7" onclick="nextLevel(8)">Weiter zu Level 8</button>
+    </div>
+
+    <div class="level" id="level8">
+      <h2>LEVEL 8 – Meldung: Terrorist im Cockpit</h2>
+      <p><b>Was geschah direkt VOR der Meldung, dass der Terrorist das Cockpit kontrolliert?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(8,'correct')">Die Alarmrotte war gestartet und näherte sich der entführten Maschine.</button>
+        <button onclick="checkAnswer(8,'wrong')">Der Tower übernahm die Führung über den Einsatz.</button>
+        <button onclick="checkAnswer(8,'wrong')">Koch wurde kurzfristig durch einen anderen Piloten ersetzt.</button>
+      </div>
+      <div id="feedback8"></div>
+      <button class="next-btn" id="next8" onclick="nextLevel(9)">Weiter zu Level 9</button>
+    </div>
+
+    <div class="level" id="level9">
+      <h2>LEVEL 9 – Start der Alarmrotte</h2>
+      <p><b>Was geschah direkt VOR dem Start der Alarmrotte?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(9,'correct')">Im nationalen Lagezentrum wurde der „Renegade“-Fall festgestellt und die Alarmrotte angefordert.</button>
+        <button onclick="checkAnswer(9,'wrong')">Die Passagiere überwältigten den Terroristen.</button>
+        <button onclick="checkAnswer(9,'wrong')">Die Maschine landete außerplanmäßig.</button>
+      </div>
+      <div id="feedback9"></div>
+      <button class="next-btn" id="next9" onclick="nextLevel(10)">Weiter zu Level 10</button>
+    </div>
+
+    <div class="level" id="level10">
+      <h2>LEVEL 10 – Renegade-Alarm</h2>
+      <p><b>Was geschah direkt VOR der Einstufung als „Renegade“-Fall?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(10,'correct')">Die nationale Luftraumüberwachung stellte fest, dass die Maschine nicht mehr auf Funk reagierte und einen gefährlichen Kurs flog.</button>
+        <button onclick="checkAnswer(10,'wrong')">Der Terrorist forderte eine Pressekonferenz.</button>
+        <button onclick="checkAnswer(10,'wrong')">Die Polizei stoppte den Start des Flugzeugs.</button>
+      </div>
+      <div id="feedback10"></div>
+      <button class="next-btn" id="next10" onclick="nextLevel(11)">Weiter zu Level 11</button>
+    </div>
+
+    <div class="level" id="level11">
+      <h2>LEVEL 11 – Funkstille und Kursabweichung</h2>
+      <p><b>Was geschah direkt VOR der Funkstille und der bedrohlichen Kursänderung?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(11,'correct')">Der Terrorist zwang den Piloten, sich an den vorbereiteten Funkspruch zu halten und Kurs auf München zu nehmen.</button>
+        <button onclick="checkAnswer(11,'wrong')">Der Kapitän informierte freiwillig über ein technisches Problem.</button>
+        <button onclick="checkAnswer(11,'wrong')">Die Fluglotsen schalteten versehentlich den Kanal ab.</button>
+      </div>
+      <div id="feedback11"></div>
+      <button class="next-btn" id="next11" onclick="nextLevel(12)">Weiter zu Level 12</button>
+    </div>
+
+    <div class="level" id="level12">
+      <h2>LEVEL 12 – Drohung gegenüber den Passagieren</h2>
+      <p><b>Was geschah direkt VOR der erzwungenen Kontrolle über das Cockpit?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(12,'correct')">Der Terrorist bedrohte Passagiere und Besatzung, um die vollständige Kontrolle zu bekommen.</button>
+        <button onclick="checkAnswer(12,'wrong')">Die Passagiere wurden über eine Verspätung informiert.</button>
+        <button onclick="checkAnswer(12,'wrong')">Die Maschine musste wegen Wetters ausweichen.</button>
+      </div>
+      <div id="feedback12"></div>
+      <button class="next-btn" id="next12" onclick="nextLevel(13)">Weiter zu Level 13</button>
+    </div>
+
+    <div class="level" id="level13">
+      <h2>LEVEL 13 – Erste Drohung: Ziel Fußballstadion</h2>
+      <p><b>Was geschah direkt VOR der konkreten Drohung gegen das Stadion?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(13,'correct')">Der Terrorist zwang den Piloten, einen vorbereiteten Funkspruch an die Flugsicherung abzusetzen.</button>
+        <button onclick="checkAnswer(13,'wrong')">Die Mannschaft des Heimvereins verließ den Platz.</button>
+        <button onclick="checkAnswer(13,'wrong')">Die Passagiere stimmten über das Ziel ab.</button>
+      </div>
+      <div id="feedback13"></div>
+      <button class="next-btn" id="next13" onclick="nextLevel(14)">Weiter zu Level 14</button>
+    </div>
+
+    <div class="level" id="level14">
+      <h2>LEVEL 14 – Vorbereitung des Funkspruchs</h2>
+      <p><b>Was geschah direkt VOR der erzwungenen Kontaktaufnahme mit der Flugaufsicht?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(14,'correct')">Der Terrorist hatte die Maschine bereits unter Kontrolle und ließ den Piloten genau den späteren Funkspruch einüben.</button>
+        <button onclick="checkAnswer(14,'wrong')">Die Besatzung informierte freiwillig über Turbulenzen.</button>
+        <button onclick="checkAnswer(14,'wrong')">Der Funk fiel wegen eines Gewitters aus.</button>
+      </div>
+      <div id="feedback14"></div>
+      <button class="next-btn" id="next14" onclick="nextLevel(15)">Weiter zu Level 15</button>
+    </div>
+
+    <div class="level" id="level15">
+      <h2>LEVEL 15 – Der Funkspruch (19:32 Uhr)</h2>
+      <p><b>Welche Aussage markiert den Ausgangspunkt der ganzen Tragödie?</b></p>
+      <div class="options">
+        <button onclick="checkAnswer(15,'correct')">Der erzwungene Funkspruch: „Wir haben diese Maschine in unserer Gewalt und werden sie in ein voll besetztes Fußballstadion stürzen lassen.“</button>
+        <button onclick="checkAnswer(15,'wrong')">Die routinemäßige Meldung über die Reiseflughöhe.</button>
+        <button onclick="checkAnswer(15,'wrong')">Die Durchsage, dass der Flug sich nur verspäten werde.</button>
+      </div>
+      <div id="feedback15"></div>
+    </div>
+
+    <p id="endMessage">
+      🎉 Du hast alle 15 Schritte der Tragödie rückwärts rekonstruiert.
+      Jetzt kannst du diskutieren, an welcher Stelle Lars Koch noch anders hätte handeln können – und an welcher nicht.
+    </p>
+
+  </div>
+</div>
+
+<script>
+  let hideTimeout;
+
+  function enableAudio() {
+    const video = document.getElementById('heroVideo');
+    const enableBtn = document.getElementById('enableSoundBtn');
+    const muteBtn = document.getElementById('muteToggle');
+    video.muted = false;
+    video.play();
+    enableBtn.style.display = 'none';
+    muteBtn.style.display = 'block';
+    startAutoHide();
+  }
+
+  function toggleMute() {
+    const video = document.getElementById('heroVideo');
+    const muteBtn = document.getElementById('muteToggle');
+    video.muted = !video.muted;
+    muteBtn.style.transform = 'scale(1.25)';
+    setTimeout(() => muteBtn.style.transform = 'scale(1)', 150);
+    muteBtn.textContent = video.muted ? '🔇' : '🔊';
+    startAutoHide();
+  }
+
+  function startAutoHide() {
+    const muteBtn = document.getElementById('muteToggle');
+    muteBtn.classList.remove('hide-controls');
+    if (hideTimeout) clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(() => {
+      muteBtn.classList.add('hide-controls');
+    }, 3000);
+  }
+
+  document.addEventListener('mousemove', () => {
+    const muteBtn = document.getElementById('muteToggle');
+    if (muteBtn.style.display === 'block') {
+      muteBtn.classList.remove('hide-controls');
+      startAutoHide();
+    }
+  });
+
+  document.addEventListener('touchstart', () => {
+    const muteBtn = document.getElementById('muteToggle');
+    if (muteBtn.style.display === 'block') {
+      muteBtn.classList.remove('hide-controls');
+      startAutoHide();
+    }
+  });
+
+  function checkAnswer(level, status) {
+    const fb = document.getElementById('feedback' + level);
+    const next = document.getElementById('next' + level);
+    if (!fb) return;
+    if (status === 'correct') {
+      fb.innerHTML = '✔ Richtig!';
+      fb.className = 'correct';
+      if (next) next.style.display = 'inline-block';
+      if (level === 15) {
+        document.getElementById('endMessage').style.display = 'block';
+      }
+    } else {
+      fb.innerHTML = '✘ Falsch! Überlege noch einmal: Was war der Schritt direkt davor?';
+      fb.className = 'wrong';
+    }
+  }
+
+  function nextLevel(level) {
+    const current = document.getElementById('level' + (level - 1));
+    const next = document.getElementById('level' + level);
+    if (current) current.classList.remove('active');
+    if (next) next.classList.add('active');
+  }
+</script>
+
+
+<script>
+// Shuffle answers EVERY TIME a level becomes active
+function shuffleOptions(levelId){
+  const box = document.querySelector('#'+levelId+' .options');
+  if(!box) return;
+  let btns = Array.from(box.querySelectorAll('button'));
+  for(let i = btns.length - 1; i > 0; i--){
+    let j = Math.floor(Math.random() * (i + 1));
+    box.appendChild(btns[j]);
+    btns.splice(j,1);
+  }
+}
+
+// Hook into level activation in Think Backwards
+const originalNextLevel = nextLevel;
+nextLevel = function(level){
+  originalNextLevel(level);
+  shuffleOptions('level'+level);
+}
+</script>
+
+
+<script>
+// Shuffle answers EVERY TIME a level becomes active
+function shuffleOptions(levelId){
+  const box = document.querySelector('#'+levelId+' .options');
+  if(!box) return;
+  let btns = Array.from(box.querySelectorAll('button'));
+  for(let i = btns.length - 1; i > 0; i--){
+    let j = Math.floor(Math.random() * (i + 1));
+    box.appendChild(btns[j]);
+    btns.splice(j,1);
+  }
+}
+
+const originalNextLevel = nextLevel;
+nextLevel = function(level){
+  originalNextLevel(level);
+  shuffleOptions('level'+level);
+}
+</script>
+
+</body>
+</html>

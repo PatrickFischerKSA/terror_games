@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Terror – Interaktive Lernwelt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #111;
+      color: white;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image: url('background_koch.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(14px) brightness(0.45);
+      z-index: -1;
+    }
+    .container {
+      max-width: 900px;
+      margin: 60px auto;
+      text-align: center;
+      padding: 0 16px;
+    }
+    h1 {
+      font-size: 2.6rem;
+      margin-bottom: 15px;
+      text-shadow: 0 0 14px black;
+    }
+    .subtitle {
+      font-size: 1.2rem;
+      margin-bottom: 40px;
+      text-shadow: 0 0 10px black;
+    }
+    .button-box {
+      background: rgba(0,0,0,0.6);
+      margin: 20px auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+    button {
+      width: 80%;
+      max-width: 350px;
+      padding: 16px;
+      margin: 15px auto;
+      background: #0066cc;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #004a99;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Terror – Interaktive Lernwelt</h1>
+    <p class="subtitle">Wähle deinen Modus</p>
+
+    <div class="button-box">
+      <h2>⏪ Think Backwards – Der Weg zum Abschuss</h2>
+      <p>Rekonstruiere Schritt für Schritt die Ereignisse aus Sicht von Lars Koch.</p>
+      <button onclick="location.href='think_backwards_final.html'">Think Backwards starten</button>
+    </div>
+
+    <div class="button-box">
+      <h2>🧭 Choose Your Path – Entscheidung im Terror-Fall</h2>
+      <p>Triff 15 Entscheidungen und sieh, welches moralische Profil sich daraus ergibt.</p>
+      <button onclick="location.href='choose_your_path_15.html'">Choose Your Path starten</button>
+    </div>
+  </div>
+</body>
+</html>
