@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Terror – Hauptmenü</title>
+    <style>
+        body { margin:0; padding:0; font-family:Arial, sans-serif; background:#111; color:white; text-align:center; }
+        .title-image { width:100%; max-width:900px; margin:20px auto; border-radius:10px; display:block; }
+        h1 { margin:10px 0 25px; font-weight:600; }
+        .menu { display:flex; flex-direction:column; gap:20px; max-width:420px; margin:0 auto; }
+        .menu button { padding:18px 22px; font-size:1.2rem; background:#333; color:white; border:none; border-radius:8px; cursor:pointer; transition:0.2s; }
+        .menu button:hover { background:#444; transform:scale(1.03); }
+        @media (max-width:600px) {
+            h1 { font-size:1.7rem; }
+            .menu button { font-size:1rem; }
+        }
+    </style>
+</head>
+<body>
+    <img src="Titelbild.jpg" alt="Titelbild" class="title-image" />
+    <h1>INTERAKTIVE SPIELE ZU „TERROR“</h1>
+    <div class="menu">
+        <button onclick="location.href='think_backwards_final.html'">🔙 Think Backwards – Der Weg zum Abschuss</button>
+        <button onclick="location.href='choose_your_path_15.html'">🧭 Choose Your Path – Entscheidungsfall</button>
+        <button onclick="location.href='spiel3_FINAL_FIX.html'">🗳️ Pausengespräche & Jury-Entscheid</button>
+    </div>
+</body>
+</html>
