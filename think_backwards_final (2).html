@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spiel 1 – Think Backwards</title>
+<style>
+:root {
+  --bg:#050505;
+  --card:#181818;
+  --accent:#f5f0e8;
+  --accent-soft:#222;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:#fff;
+}
+.back-btn{
+  position:fixed;
+  top:16px;
+  left:16px;
+  z-index:40;
+  padding:8px 14px;
+  border-radius:999px;
+  border:none;
+  background:rgba(0,0,0,0.8);
+  color:#fff;
+  cursor:pointer;
+  font-size:0.95rem;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+main{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:70px 16px 40px;
+}
+.trailer-wrapper{
+  width:100%;
+  max-width:960px;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,0.8);
+  position:relative;
+}
+.trailer-video{
+  width:100%;
+  display:block;
+  background:#000;
+}
+.mute-toggle{
+  position:absolute;
+  top:14px;
+  right:14px;
+  border:none;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:1.05rem;
+  cursor:pointer;
+  background:rgba(0,0,0,0.65);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.trailer-caption{
+  position:absolute;
+  left:18px;
+  bottom:16px;
+  background:linear-gradient(to right,rgba(0,0,0,0.8),transparent);
+  padding:10px 18px 10px 10px;
+  border-radius:12px;
+}
+.trailer-caption h1{
+  margin:0;
+  font-size:1.6rem;
+}
+.trailer-caption p{
+  margin:4px 0 0;
+  font-size:0.9rem;
+  color:#ddd;
+}
+.game-card{
+  margin-top:28px;
+  width:100%;
+  max-width:780px;
+  background:var(--card);
+  border-radius:18px;
+  padding:20px 18px 22px;
+  box-shadow:0 18px 45px rgba(0,0,0,0.7);
+}
+.game-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  font-size:0.95rem;
+  color:#bbb;
+}
+.game-question{
+  font-size:1.1rem;
+  margin-bottom:18px;
+}
+.options{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.option-btn{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid #333;
+  background:#222;
+  color:#fff;
+  text-align:left;
+  cursor:pointer;
+  font-size:0.98rem;
+  transition:background .2s ease, transform .1s ease, border-color .2s ease;
+}
+.option-btn:hover{
+  background:#2e2e2e;
+  transform:translateY(-1px);
+}
+.option-btn.correct{
+  background:#145a32;
+  border-color:#27ae60;
+}
+.option-btn.wrong{
+  background:#641e16;
+  border-color:#e74c3c;
+}
+.feedback{
+  margin-top:14px;
+  font-size:0.95rem;
+}
+.feedback strong{display:block;margin-bottom:4px;}
+.nav-row{
+  margin-top:20px;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.nav-btn{
+  flex:1;
+  padding:11px 14px;
+  border-radius:999px;
+  border:none;
+  background:#f5f0e8;
+  color:#111;
+  font-size:0.96rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .2s ease, transform .1s ease;
+}
+.nav-btn.secondary{
+  background:#222;
+  color:#eee;
+}
+.nav-btn:hover{
+  transform:translateY(-1px);
+  background:#e0d7c8;
+}
+.nav-btn.secondary:hover{
+  background:#333;
+}
+.nav-btn:disabled{
+  opacity:0.4;
+  cursor:default;
+  transform:none;
+}
+@media (max-width:700px){
+  .trailer-caption h1{font-size:1.25rem;}
+  .trailer-caption p{font-size:0.8rem;}
+}
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="location.href='index.html'">🏠 Hauptmenü</button>
+
+<main>
+  <div class="trailer-wrapper">
+    <video id="tbTrailer" class="trailer-video" autoplay muted loop playsinline>
+      <source src="Trailer_Terror.mp4" type="video/mp4">
+    </video>
+    <button id="tbMute" class="mute-toggle" type="button">🔇 Ton einschalten</button>
+    <div class="trailer-caption">
+      <h1>Think Backwards</h1>
+      <p>Rekonstruiere die letzten Entscheidungen, bevor Lars Koch den Abschuss auslöst.</p>
+    </div>
+  </div>
+
+  <section id="game" class="game-card">
+    <div class="game-header">
+      <span id="levelLabel">Level 1 / 10</span>
+      <span id="scoreLabel">Punkte: 0</span>
+    </div>
+    <div id="question" class="game-question"></div>
+    <div id="options" class="options"></div>
+    <div id="feedback" class="feedback"></div>
+    <div class="nav-row">
+      <button id="prevBtn" class="nav-btn secondary" type="button">⬅ Zurück</button>
+      <button id="nextBtn" class="nav-btn" type="button">Weiter ➜</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const tbTrailer = document.getElementById('tbTrailer');
+const tbMute = document.getElementById('tbMute');
+let tbMuted = true;
+tbMute.addEventListener('click', () => {
+  tbMuted = !tbMuted;
+  tbTrailer.muted = tbMuted;
+  tbMute.textContent = tbMuted ? '🔇 Ton einschalten' : '🔊 Ton ausschalten';
+});
+
+const LEVELS = [
+  {q:'Unmittelbar vor dem Abschuss stellt sich für Koch die zentrale Frage: Was steht für ihn im Vordergrund?',
+   options:[
+    {t:'Die Rettung der größtmöglichen Anzahl von Menschen im Stadion.', c:true,
+     expl:'Der Text betont immer wieder, dass Koch die vielen Menschen in der Arena vor Augen hat.'},
+    {t:'Der Schutz des Flugzeugs und der Menschen an Bord.', c:false,
+     expl:'Die Passagiere sind für ihn tragische Opfer, aber nicht mehr zu retten.'},
+    {t:'Seine eigene Karriere und die Angst vor Konsequenzen.', c:false,
+     expl:'Kochs innere Konflikte drehen sich um Verantwortung, nicht um Karriere.'}
+   ]},
+  {q:'Kurz davor hat Koch die letzte Funkmeldung an Weinbergers Stab gehört. Worum geht es darin?',
+   options:[
+    {t:'Die Maschine ist abgedreht und entfernt sich von der Arena.', c:false,
+     expl:'Das Gegenteil ist der Fall: Die Maschine steuert weiter auf die Arena zu.'},
+    {t:'Die Maschine befindet sich weiterhin im Kurs auf die überfüllte Arena.', c:true,
+     expl:'Die Lage spitzt sich zu, weil der Kurs nicht geändert wird.'},
+    {t:'Der Verteidigungsminister untersagt ausdrücklich den Abschuss.', c:false,
+     expl:'Ein ausdrückliches Verbot in diesem Moment wird nicht berichtet.'}
+   ]},
+  {q:'Welche Informationslage bestimmt Kochs Handeln wenige Minuten vor dem Abschuss?',
+   options:[
+    {t:'Es gibt konkrete Hinweise auf eine technische Störung ohne Terrorverdacht.', c:false,
+     expl:'Die Maschine wird als potenzielle Terrorwaffe gesehen, nicht als bloßer Technikfall.'},
+    {t:'Es besteht der Verdacht, dass die Maschine von Terroristen kontrolliert wird.', c:true,
+     expl:'Der Verdacht ist zentral: Das Flugzeug könnte gezielt als Waffe eingesetzt werden.'},
+    {t:'Die Maschine ist leer, es bestehen keine Risiken für Menschenleben.', c:false,
+     expl:'Gerade die vielen Menschenleben machen die Situation zur Tragödie.'}
+   ]},
+  {q:'Welche verfassungsrechtliche Frage schwingt in Kochs Entscheidung mit?',
+   options:[
+    {t:'Ob die Menschenwürde einiger weniger gegen das Überleben vieler abgewogen werden darf.', c:true,
+     expl:'Genau dieser Konflikt bildet den juristischen Kern des Stücks.'},
+    {t:'Ob das Militär grundsätzlich im Inland eingesetzt werden darf.', c:false,
+     expl:'Das ist eine Nebenfrage, aber nicht der Kern des Dramas.'},
+    {t:'Ob zivile Flüge mit Kampfjets begleitet werden dürfen.', c:false,
+     expl:'Das ist praktisch relevant, aber nicht die zentrale Verfassungsfrage.'}
+   ]},
+  {q:'Welche Rolle spielt der Konflikt in der Befehlskette für Koch?',
+   options:[
+    {t:'Lauterbach übernimmt die Verantwortung und entlastet Koch vollständig.', c:false,
+     expl:'Koch bleibt derjenige, der letztlich den Schuss auslöst.'},
+    {t:'Koch erlebt, dass die Verantwortung trotz Befehlen am Ende bei ihm bleibt.', c:true,
+     expl:'Befehle helfen nur begrenzt – im Cockpit entscheidet letztlich Koch selbst.'},
+    {t:'Lauterbach verweigert jede Stellungnahme zur Lage.', c:false,
+     expl:'Im Stück wird intensiv kommandiert, nicht geschwiegen.'}
+   ]},
+  {q:'Welche Überlegung prägt Kochs Denken lange vor der letzten Sekunde?',
+   options:[
+    {t:'Er will um jeden Preis juristisch unangreifbar bleiben.', c:false,
+     expl:'Koch fürchtet zwar Folgen, handelt aber aus Verantwortung, nicht aus Angst.'},
+    {t:'Er fragt sich, ob Nichthandeln nicht moralisch genauso belastend wäre wie Handeln.', c:true,
+     expl:'Die Frage, ob Unterlassen nicht ebenso schuldhaft ist, zieht sich durch seine Gedanken.'},
+    {t:'Er ist fest überzeugt, dass es eindeutig nur eine richtige Lösung gibt.', c:false,
+     expl:'Gerade die Ambivalenz und das Ringen machen die Figur aus.'}
+   ]},
+  {q:'Wie wird Kochs professionelle Haltung als Pilot charakterisiert?',
+   options:[
+    {t:'Er gilt als sprunghaft und unzuverlässig.', c:false,
+     expl:'Im Stück wird er als pflichtbewusst und zuverlässig beschrieben.'},
+    {t:'Er ist als besonnener, erfahrener Offizier bekannt.', c:true,
+     expl:'Das macht seine Entscheidung umso schwerer zu beurteilen.'},
+    {t:'Er ist noch in der Ausbildung und unerfahren.', c:false,
+     expl:'Er ist kein Auszubildender, sondern langjähriger Offizier.'}
+   ]},
+  {q:'Welche biografische Notiz wird zur Erklärung seiner Entscheidung herangezogen?',
+   options:[
+    {t:'Seine Kindheit in einer Militärfamilie mit rigider Gehorsamserziehung.', c:false,
+     expl:'Das Stück legt den Fokus eher auf seine Verantwortung als auf stereotype Biografien.'},
+    {t:'Seine große Bindung zur Zivilbevölkerung und ihr Schutzbedürfnis.', c:true,
+     expl:'Gerade der Gedanke an die vielen Menschen im Stadion berührt ihn tief.'},
+    {t:'Ein früherer Vorfall, bei dem er aus Angst nicht gehandelt hat.', c:false,
+     expl:'Ein solcher konkreter Vorfall wird nicht erzählt.'}
+   ]},
+  {q:'Welche Rolle spielt das Zusammenspiel von Zeitdruck und Informationsknappheit?',
+   options:[
+    {t:'Zeitdruck ist gering, er kann in Ruhe alle Optionen prüfen.', c:false,
+     expl:'Zeit ist das, was ihm am meisten fehlt: die Entscheidung muss in Sekunden fallen.'},
+    {t:'Er weiß, dass jede Verzögerung die Katastrophe wahrscheinlicher macht.', c:true,
+     expl:'Darum empfindet er das Abwarten als kaum erträglich.'},
+    {t:'Die Informationen sind so eindeutig, dass kein Zweifel bleiben kann.', c:false,
+     expl:'Gerade der verbleibende Zweifel macht die Lage so tragisch.'}
+   ]},
+  {q:'Ganz am Anfang der Kette: Was ist der Ausgangspunkt der Tragödie?',
+   options:[
+    {t:'Ein Routineflug ohne jede Besonderheit.', c:false,
+     expl:'Die Besonderheit liegt im Verlust der Kontrolle über die Maschine.'},
+    {t:'Das plötzliche Abweichen vom Kurs und der Funkkontaktabbruch.', c:true,
+     expl:'Damit beginnt die Kette von Annahmen, Entscheidungen und Verantwortung.'},
+    {t:'Ein technischer Defekt, der sofort erkannt wird.', c:false,
+     expl:'Die Ursache bleibt zunächst unklar – Terror ist nur eine Möglichkeit.'}
+   ]}
+];
+
+let current = 0;
+let score = 0;
+let answered = false;
+
+const qEl = document.getElementById('question');
+const optEl = document.getElementById('options');
+const fbEl = document.getElementById('feedback');
+const levelLabel = document.getElementById('levelLabel');
+const scoreLabel = document.getElementById('scoreLabel');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+function renderLevel(){
+  const L = LEVELS[current];
+  levelLabel.textContent = `Level ${current+1} / ${LEVELS.length}`;
+  scoreLabel.textContent = `Punkte: ${score}`;
+  qEl.textContent = L.q;
+  fbEl.textContent = '';
+  optEl.innerHTML = '';
+  answered = false;
+
+  L.options.forEach((o, idx) => {
+    const b = document.createElement('button');
+    b.className = 'option-btn';
+    b.textContent = o.t;
+    b.onclick = () => handleAnswer(idx);
+    optEl.appendChild(b);
+  });
+
+  prevBtn.disabled = current === 0;
+  nextBtn.disabled = current === LEVELS.length-1;
+}
+
+function handleAnswer(idx){
+  if(answered) return;
+  answered = true;
+  const L = LEVELS[current];
+  const buttons = optEl.querySelectorAll('.option-btn');
+  buttons.forEach((b,i)=>{
+    if(L.options[i].c) b.classList.add('correct');
+    if(!L.options[i].c && i===idx) b.classList.add('wrong');
+    b.disabled = true;
+  });
+
+  const chosen = L.options[idx];
+  if(chosen.c){
+    score++;
+    fbEl.innerHTML = '<strong>Richtig.</strong> ' + chosen.expl;
+  } else {
+    const corr = L.options.find(o=>o.c);
+    fbEl.innerHTML = '<strong>Nicht ganz.</strong> ' + chosen.expl + ' Richtiger Fokus wäre: ' + corr.t;
+  }
+  scoreLabel.textContent = `Punkte: ${score}`;
+}
+
+prevBtn.addEventListener('click', () => {
+  if(current>0){ current--; renderLevel(); }
+});
+
+nextBtn.addEventListener('click', () => {
+  if(current<LEVELS.length-1){ current++; renderLevel(); }
+});
+
+renderLevel();
+</script>
+
+</body>
+</html>

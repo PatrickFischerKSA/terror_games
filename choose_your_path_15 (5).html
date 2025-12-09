@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spiel 2 – Choose Your Path</title>
+<style>
+:root {
+  --bg:#050505;
+  --card:#181818;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:#fff;
+}
+.back-btn{
+  position:fixed;
+  top:16px;
+  left:16px;
+  z-index:40;
+  padding:8px 14px;
+  border-radius:999px;
+  border:none;
+  background:rgba(0,0,0,0.8);
+  color:#fff;
+  cursor:pointer;
+  font-size:0.95rem;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+main{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:70px 16px 40px;
+}
+.trailer-wrapper{
+  width:100%;
+  max-width:960px;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,0.8);
+  position:relative;
+}
+.trailer-video{
+  width:100%;
+  display:block;
+  background:#000;
+}
+.mute-toggle{
+  position:absolute;
+  top:14px;
+  right:14px;
+  border:none;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:1.05rem;
+  cursor:pointer;
+  background:rgba(0,0,0,0.65);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.trailer-caption{
+  position:absolute;
+  left:18px;
+  bottom:16px;
+  background:linear-gradient(to right,rgba(0,0,0,0.8),transparent);
+  padding:10px 18px 10px 10px;
+  border-radius:12px;
+}
+.trailer-caption h1{
+  margin:0;
+  font-size:1.4rem;
+}
+.trailer-caption p{
+  margin:4px 0 0;
+  font-size:0.9rem;
+  color:#ddd;
+}
+.game-card{
+  margin-top:28px;
+  width:100%;
+  max-width:780px;
+  background:var(--card);
+  border-radius:18px;
+  padding:20px 18px 24px;
+  box-shadow:0 18px 45px rgba(0,0,0,0.7);
+}
+.game-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  font-size:0.95rem;
+  color:#bbb;
+}
+.situation{
+  font-size:1.05rem;
+  margin-bottom:18px;
+}
+.choice-btn{
+  width:100%;
+  padding:12px 14px;
+  border-radius:10px;
+  border:1px solid #333;
+  background:#222;
+  color:#fff;
+  text-align:left;
+  cursor:pointer;
+  margin-bottom:10px;
+  font-size:0.98rem;
+  transition:background .2s ease, transform .1s ease, border-color .2s ease;
+}
+.choice-btn:hover{
+  background:#2e2e2e;
+  transform:translateY(-1px);
+}
+.choice-btn.selected{
+  border-color:#f5f0e8;
+  background:#303030;
+}
+.expl{
+  margin-top:12px;
+  font-size:0.95rem;
+}
+.expl strong{display:block;margin-bottom:4px;}
+.nav-row{
+  margin-top:20px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.nav-btn{
+  width:100%;
+  padding:12px 14px;
+  border-radius:999px;
+  border:none;
+  background:#f5f0e8;
+  color:#111;
+  font-size:0.96rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .2s ease, transform .1s ease;
+}
+.nav-btn.secondary{
+  background:#222;
+  color:#eee;
+}
+.nav-btn:hover{
+  transform:translateY(-1px);
+  background:#e0d7c8;
+}
+.nav-btn.secondary:hover{
+  background:#333;
+}
+.nav-btn:disabled{
+  opacity:0.4;
+  cursor:default;
+  transform:none;
+}
+.summary{
+  margin-top:16px;
+  font-size:0.95rem;
+  color:#ddd;
+}
+@media(max-width:700px){
+  .trailer-caption h1{font-size:1.2rem;}
+  .trailer-caption p{font-size:0.8rem;}
+}
+</style>
+</head>
+<body>
+
+<button class="back-btn" onclick="location.href='index.html'">🏠 Hauptmenü</button>
+
+<main>
+  <div class="trailer-wrapper">
+    <video id="cpTrailer" class="trailer-video" autoplay muted loop playsinline>
+      <source src="Trailer_Trolley.mp4" type="video/mp4">
+    </video>
+    <button id="cpMute" class="mute-toggle" type="button">🔇 Ton einschalten</button>
+    <div class="trailer-caption">
+      <h1>Choose Your Path</h1>
+      <p>Du stehst vor moralischen Dilemmata. Welche Gründe führen zu deiner Entscheidung?</p>
+    </div>
+  </div>
+
+  <section id="game" class="game-card">
+    <div class="game-header">
+      <span id="cpLevelLabel">Dilemma 1 / 8</span>
+      <span id="cpProfileLabel">Profil: ausgeglichen</span>
+    </div>
+    <div id="cpSituation" class="situation"></div>
+    <button id="cpChoiceA" class="choice-btn" type="button"></button>
+    <button id="cpChoiceB" class="choice-btn" type="button"></button>
+    <div id="cpExpl" class="expl"></div>
+    <div class="nav-row">
+      <button id="cpPrevBtn" class="nav-btn secondary" type="button">⬅ Zurück</button>
+      <button id="cpNextBtn" class="nav-btn" type="button">Weiter ➜</button>
+    </div>
+    <div id="cpSummary" class="summary"></div>
+  </section>
+</main>
+
+<script>
+const cpTrailer = document.getElementById('cpTrailer');
+const cpMute = document.getElementById('cpMute');
+let cpMuted = true;
+cpMute.addEventListener('click', () => {
+  cpMuted = !cpMuted;
+  cpTrailer.muted = cpMuted;
+  cpMute.textContent = cpMuted ? '🔇 Ton einschalten' : '🔊 Ton ausschalten';
+});
+
+const D = [
+  {
+    situation:'Eine Straßenbahn ist außer Kontrolle. Auf dem Hauptgleis arbeiten fünf Menschen, auf einem Nebengleis eine Person. Du stehst an einer Weiche und kannst umstellen.',
+    a:{label:'Du stellst die Weiche auf das Nebengleis mit einer Person.', type:'util',
+       expl:'Du folgst dem Gedanken, dass weniger Tote besser sind – typisch für eine nutzenorientierte Sicht.'},
+    b:{label:'Du greifst nicht ein und lässt den Wagen auf dem Hauptgleis weiterfahren.',
+       type:'deon',
+       expl:'Du vermeidest es, aktiv den Tod einer bestimmten Person zu verursachen – typisch für eine pflichtorientierte Haltung.'}
+  },
+  {
+    situation:'Ein Evakuierungsbus ist überfüllt. Wenn du noch drei Personen zusteigen lässt, ist nicht sicher, ob der Bus rechtzeitig wegkommt.',
+    a:{label:'Du lässt niemanden mehr einsteigen, um die bereits Eingestiegenen zu schützen.',
+       type:'deon',
+       expl:'Du hältst an der einmal übernommenen Verantwortung für diese Gruppe fest, ohne sie erneut abzuwägen.'},
+    b:{label:'Du öffnest die Tür und versuchst, so viele wie möglich mitzunehmen.',
+       type:'util',
+       expl:'Du denkst an die größtmögliche Zahl Geretteter und nimmst das zusätzliche Risiko in Kauf.'}
+  },
+  {
+    situation:'In einem Krankenhaus steht nur ein Intensivbett zur Verfügung. Zwei Patienten benötigen es dringend.',
+    a:{label:'Du vergibst das Bett an die Person mit den besseren Heilungschancen.',
+       type:'util',
+       expl:'Du orientierst dich am möglichen Gesamtgewinn an Lebenszeit – ein nutzenorientierter Gedanke.'},
+    b:{label:'Du losst zwischen den beiden Patient*innen.',
+       type:'deon',
+       expl:'Du vermeidest eine inhaltliche Wertung von Leben und setzt auf Gleichbehandlung.'}
+  },
+  {
+    situation:'Im Einsatz musst du entscheiden, ob du eine riskante Rettungsaktion startest, um eine einzelne Person aus akuter Gefahr zu holen.',
+    a:{label:'Du brichst die Aktion ab, weil dein Team zu großes Risiko hätte.',
+       type:'deon',
+       expl:'Du siehst eine Grenze, andere bewusst in massive Gefahr zu schicken, auch wenn es „nur“ um eine Person geht.'},
+    b:{label:'Du startest die Aktion, weil jedes Menschenleben zählt.',
+       type:'util',
+       expl:'Du gewichtest den möglichen Gewinn – ein Menschenleben – höher als das kalkulierte Risiko.'}
+  },
+  {
+    situation:'Eine Regierung muss entscheiden, ob Daten der Bevölkerung breit ausgewertet werden dürfen, um Anschläge besser zu verhindern.',
+    a:{label:'Du befürwortest die Auswertung, solange viele Leben geschützt werden können.',
+       type:'util',
+       expl:'Du argumentierst mit der Sicherheit vieler – ein nutzenorientierter Schwerpunkt.'},
+    b:{label:'Du lehnst die Auswertung ab, weil die Privatsphäre unantastbar sein soll.',
+       type:'deon',
+       expl:'Du stellst ein Grundrecht über eine mögliche Nutzenrechnung – eine pflichtorientierte Sicht.'}
+  },
+  {
+    situation:'Ein Lehrer muss entscheiden, ob er eine Schülerin meldet, die möglicherweise jemandem schadet, obwohl noch nichts passiert ist.',
+    a:{label:'Er meldet sie, um möglichen Schaden zu verhindern.',
+       type:'util',
+       expl:'Er handelt vorbeugend, um zukünftigen Schaden zu minimieren.'},
+    b:{label:'Er beobachtet weiter und spricht zuerst mit ihr, bevor er meldet.',
+       type:'deon',
+       expl:'Er respektiert zunächst ihre Vertrauensposition und versucht, sie als Person ernst zu nehmen.'}
+  },
+  {
+    situation:'Du bist Mitglied einer Jury und musst entscheiden, ob eine Person, die gegen ein Gesetz verstoßen hat, ausnahmsweise freigesprochen werden soll.',
+    a:{label:'Du plädierst auf Freispruch, weil die Motive verständlich und die Umstände extrem waren.',
+       type:'util',
+       expl:'Du berücksichtigst Umstände und Folgen stärker als den Wortlaut des Gesetzes.'},
+    b:{label:'Du bestehst auf einer Verurteilung, weil das Gesetz für alle gleich gelten muss.',
+       type:'deon',
+       expl:'Du betonst die Verlässlichkeit der Rechtsordnung als höheres Gut.'}
+  },
+  {
+    situation:'Im Theaterfall „Terror“ sitzt du selbst im Publikum und musst am Ende abstimmen.',
+    a:{label:'Du stimmst für „unschuldig“, weil viele gerettet wurden.',
+       type:'util',
+       expl:'Du gewichtest das Leben der vielen stärker als das der wenigen an Bord.'},
+    b:{label:'Du stimmst für „schuldig“, weil kein Staat Unschuldige töten darf.',
+       type:'deon',
+       expl:'Du stellst das Verbot, Unbeteiligte zu töten, über die Nutzenabwägung.'}
+  }
+];
+
+let idx = 0;
+let profile = {util:0, deon:0};
+let chosen = Array(D.length).fill(null);
+
+const cpLevelLabel = document.getElementById('cpLevelLabel');
+const cpProfileLabel = document.getElementById('cpProfileLabel');
+const cpSituation = document.getElementById('cpSituation');
+const cpChoiceA = document.getElementById('cpChoiceA');
+const cpChoiceB = document.getElementById('cpChoiceB');
+const cpExpl = document.getElementById('cpExpl');
+const cpPrevBtn = document.getElementById('cpPrevBtn');
+const cpNextBtn = document.getElementById('cpNextBtn');
+const cpSummary = document.getElementById('cpSummary');
+
+function updateProfileLabel(){
+  if(profile.util > profile.deon){
+    cpProfileLabel.textContent = 'Profil: eher nutzenorientiert (Folgen im Blick)';
+  } else if(profile.deon > profile.util){
+    cpProfileLabel.textContent = 'Profil: eher pflichtorientiert (Prinzipien im Blick)';
+  } else {
+    cpProfileLabel.textContent = 'Profil: ausgeglichen';
+  }
+}
+
+function renderCP(){
+  const L = D[idx];
+  cpLevelLabel.textContent = `Dilemma ${idx+1} / ${D.length}`;
+  cpSituation.textContent = L.situation;
+  cpChoiceA.textContent = L.a.label;
+  cpChoiceB.textContent = L.b.label;
+  cpExpl.textContent = '';
+  cpChoiceA.classList.remove('selected');
+  cpChoiceB.classList.remove('selected');
+
+  if(chosen[idx] === 'a'){
+    cpChoiceA.classList.add('selected');
+    cpExpl.innerHTML = '<strong>Deine Wahl:</strong> ' + L.a.expl;
+  } else if(chosen[idx] === 'b'){
+    cpChoiceB.classList.add('selected');
+    cpExpl.innerHTML = '<strong>Deine Wahl:</strong> ' + L.b.expl;
+  }
+
+  cpPrevBtn.disabled = idx === 0;
+  cpNextBtn.textContent = idx === D.length-1 ? 'Auswertung anzeigen' : 'Weiter ➜';
+  cpSummary.textContent = '';
+  updateProfileLabel();
+}
+
+function adjustProfile(oldChoice, newChoice){
+  if(oldChoice){
+    const oldType = D[idx][oldChoice].type;
+    profile[oldType] = Math.max(0, profile[oldType]-1);
+  }
+  if(newChoice){
+    const newType = D[idx][newChoice].type;
+    profile[newType] += 1;
+  }
+}
+
+cpChoiceA.addEventListener('click', () => {
+  adjustProfile(chosen[idx], 'a');
+  chosen[idx] = 'a';
+  renderCP();
+});
+
+cpChoiceB.addEventListener('click', () => {
+  adjustProfile(chosen[idx], 'b');
+  chosen[idx] = 'b';
+  renderCP();
+});
+
+cpPrevBtn.addEventListener('click', () => {
+  if(idx>0){ idx--; renderCP(); }
+});
+
+cpNextBtn.addEventListener('click', () => {
+  if(idx < D.length-1){
+    idx++;
+    renderCP();
+  } else {
+    let text = '';
+    if(profile.util > profile.deon){
+      text = 'In deinen Entscheidungen überwiegt eine nutzenorientierte Perspektive: Du schaust oft darauf, welche Folgen insgesamt besser sind.';
+    } else if(profile.deon > profile.util){
+      text = 'In deinen Entscheidungen überwiegt eine pflichtorientierte Perspektive: Du betonst eher Prinzipien, Rechte und Grenzen des Handelns.';
+    } else {
+      text = 'Deine Entscheidungen liegen zwischen nutzenorientierten und pflichtorientierten Überlegungen – du scheinst beide Seiten zu bedenken.';
+    }
+    cpSummary.textContent = text;
+  }
+});
+
+renderCP();
+</script>
+
+</body>
+</html>
