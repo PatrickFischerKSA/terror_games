@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta-name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktive Spiele zu „Terror“</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background: #000;
+            color: #fff;
+            text-align: center;
+        }
+        .hero {
+            width: 100%;
+            height: 90vh;
+            background-image: url('Titelbild.jpg');
+            background-size: contain;
+            background-position: top center;
+            background-repeat: no-repeat;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 40px;
+        }
+        h1 {
+            font-size: 2.4rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+        .btn {
+            padding: 18px 24px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 12px;
+            background: #222;
+            border: 2px solid #444;
+            color: #fff;
+            cursor: pointer;
+            transition: 0.25s ease;
+            text-decoration: none;
+            display: block;
+        }
+        .btn:hover {
+            background: #333;
+            border-color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Interaktive Spiele zu „Terror“</h1>
+    </div>
+    <div class="buttons">
+        <a class="btn" href="think_backwards_final.html">🎯 Spiel 1 – Think Backwards</a>
+        <a class="btn" href="choose_your_path_15.html">🧭 Spiel 2 – Choose Your Path</a>
+        <a class="btn" href="spiel3_FINAL.html">⚖️ Spiel 3 – Jury-Simulation</a>
+    </div>
+</body>
+</html>
